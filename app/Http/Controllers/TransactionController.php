@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use PhpParser\Node\Stmt\TryCatch;
 use Symfony\Component\HttpFoundation\Response;
 
 class TransactionController extends Controller
@@ -33,7 +35,27 @@ class TransactionController extends Controller
    */
   public function store(Request $request)
   {
-      //
+    $validator = Validator::make($request->all(), [
+      'title'   => ['required', 'string', 'max:255'],
+      'amount'  => ['required', 'numeric'],
+      'type'    => ['required', 'in:income,expense']
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    Try {
+      $transaction = Transaction::create($request->all());
+      $response = [
+        'message' => 'Transaction created successfully',
+        'data' => $transaction
+      ];
+
+      return response()->json($response, Response::HTTP_CREATED);
+    } catch (\Exception $e) {
+      return response()->json(['message' => $e->errorInfo], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
   }
 
   /**
@@ -44,7 +66,18 @@ class TransactionController extends Controller
    */
   public function show($id)
   {
-      //
+    $transaction = Transaction::find($id);
+
+    if (!$transaction) {
+      return response()->json(['message' => 'Transaction not found'], Response::HTTP_NOT_FOUND);
+    }
+
+    $response = [
+      'message' => 'Transaction found',
+      'data' => $transaction
+    ];
+
+    return response()->json($response, Response::HTTP_OK);
   }
 
   /**
@@ -56,7 +89,29 @@ class TransactionController extends Controller
    */
   public function update(Request $request, $id)
   {
-      //
+    $findTransaction = Transaction::findOrFail($id);
+
+    $validator = Validator::make($request->all(), [
+      'title'   => ['required', 'string', 'max:255'],
+      'amount'  => ['required', 'numeric'],
+      'type'    => ['required', 'in:income,expense']
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    Try {
+      $findTransaction->update($request->all());
+      $response = [
+        'message' => 'Transaction update successfully',
+        'data' => $findTransaction
+      ];
+
+      return response()->json($response, Response::HTTP_OK);
+    } catch (\Exception $e) {
+      return response()->json(['message' => $e->errorInfo], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
   }
 
   /**
@@ -67,6 +122,21 @@ class TransactionController extends Controller
    */
   public function destroy($id)
   {
-      //
+    $findTransaction = Transaction::findOrFail($id);
+
+    if (!$findTransaction) {
+      return response()->json(['message' => 'Transaction not found'], Response::HTTP_NOT_FOUND);
+    }
+
+    Try {
+      $findTransaction->delete();
+      $response = [
+        'message' => 'Transaction deleted successfully'
+      ];
+
+      return response()->json($response, Response::HTTP_OK);
+    } catch (\Exception $e) {
+      return response()->json(['message' => $e->errorInfo], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
   }
 }
