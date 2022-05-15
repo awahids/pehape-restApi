@@ -6,30 +6,30 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateTransactionsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
-    {
-        Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->double('amount');
-            $table->timestamp('time')->default(now());
-            $table->enum('type', ['income', 'expense']);
-            $table->timestamps();
-        });
-    }
+  /**
+   * Run the migrations.
+   *
+   * @return void
+   */
+  public function up()
+  {
+    Schema::create('transactions', function (Blueprint $table) {
+      $table->id();
+      $table->string('title');
+      $table->double('amount');
+      $table->timestamp('time')->default(now());
+      $table->enum('type', ['income', 'expense']);
+      $table->timestamps();
+    });
+  }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::dropIfExists('transactions');
-    }
+  /**
+   * Reverse the migrations.
+   *
+   * @return void
+   */
+  public function down()
+  {
+    Schema::dropIfExists('transactions');
+  }
 }
