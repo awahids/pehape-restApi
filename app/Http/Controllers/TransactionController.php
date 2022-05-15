@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class TransactionController extends Controller
 {
@@ -21,7 +22,7 @@ class TransactionController extends Controller
       'data' => $transactions
     ];
 
-    return response()->json($response, 200);
+    return response()->json($response, Response::HTTP_OK);
   }
 
   /**
